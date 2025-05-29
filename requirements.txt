@@ -1,0 +1,9 @@
+fastapi[all]
+langchain
+typing
+httpx
+langchain-community
+datetime
+chromadb
+langchain_text_splitters 
+pypdf

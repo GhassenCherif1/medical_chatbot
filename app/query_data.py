@@ -3,10 +3,14 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_community.llms.ollama import Ollama
 from .get_embedding_function import get_embedding_function
 from .schemas import ChatMessage
+#Testing Retriver
+# from get_embedding_function import get_embedding_function
+# from schemas import ChatMessage
 from typing import List
 import httpx
 CHROMA_PATH = "app/chroma"
-
+#Testing Retriever
+#CHROMA_PATH = "chroma"
 PROMPT_TEMPLATE = """
 Below are the relevant context documents that may assist in answering the user's question:
 
@@ -49,3 +53,15 @@ async def query_rag(chatmessages : List[ChatMessage]):
     formatted_response = f"Response: {response_text}\nSources: {sources}"
     print(formatted_response)
     return response_text
+
+def query_retriever(chatmessages : List[ChatMessage]):
+    # Prepare the DB.
+    embedding_function = get_embedding_function()
+    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
+    query_text = chatmessages[-1].content
+    # Search the DB.
+    results = db.similarity_search_with_score(query_text, k=3)
+    sources = [doc.metadata.get("id", None) for doc, _score in results]
+    formatted_response = f"Sources: {sources}"
+    print(formatted_response)
+    return sources
